@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate and package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libglib2.0-bin zip
+
+      - name: Validate sources
+        run: make check
+
+      - name: Build extension package
+        run: make pack
+
+      - name: Inspect package
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import sys
+          import zipfile
+
+          root = pathlib.Path("dist")
+          zips = sorted(root.glob("*.shell-extension.zip"))
+          if len(zips) != 1:
+              sys.exit(f"expected exactly one zip in {root}, found {len(zips)}")
+          path = zips[0]
+          with zipfile.ZipFile(path) as archive:
+              names = set(archive.namelist())
+              required = {
+                  "metadata.json",
+                  "extension.js",
+                  "prefs.js",
+                  "schemas/gschemas.compiled",
+                  "effects/index.js",
+                  "lib/clutter.js",
+              }
+              missing = required - names
+              if missing:
+                  sys.exit(f"package is missing: {sorted(missing)}")
+              if any(name.startswith(("build/", "dist/", ".git/")) for name in names):
+                  sys.exit("package contains development files")
+              if "effects/_template.js" in names:
+                  sys.exit("package contains effects/_template.js")
+              metadata = json.loads(archive.read("metadata.json"))
+              if metadata["uuid"] + ".shell-extension.zip" != path.name:
+                  sys.exit("zip filename does not match metadata uuid")
+          print(f"OK: {path} ({len(names)} files)")
+          PY
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: drag-effects-extension
+          path: dist/*.shell-extension.zip
+          if-no-files-found: error

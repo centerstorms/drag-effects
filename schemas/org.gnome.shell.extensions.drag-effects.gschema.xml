@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Each effect owns its settings plus an on/off key named:
+      effect-<id>-enabled
+  Adding an effect means adding its keys here and registering the class in
+  effects/index.js.
+-->
+<schemalist>
+  <schema id="org.gnome.shell.extensions.drag-effects"
+          path="/org/gnome/shell/extensions/drag-effects/">
+
+    <!-- ================= Core: tilt ================= -->
+    <key name="effect-tilt-enabled" type="b">
+      <default>true</default>
+      <summary>Enable the inertial tilt effect</summary>
+    </key>
+
+    <key name="tilt-max-angle" type="i">
+      <default>8</default>
+      <range min="1" max="30"/>
+      <summary>Maximum tilt angle (degrees)</summary>
+    </key>
+
+    <key name="tilt-sensitivity" type="d">
+      <default>0.6</default>
+      <range min="0.05" max="3.0"/>
+      <summary>Tilt in degrees per pixel of pointer movement per frame</summary>
+    </key>
+
+    <key name="tilt-smoothing" type="d">
+      <default>0.2</default>
+      <range min="0.05" max="1.0"/>
+      <summary>How smoothly the tilt follows motion</summary>
+    </key>
+
+    <!-- ================= Core: stretch ================= -->
+    <key name="effect-stretch-enabled" type="b">
+      <default>true</default>
+      <summary>Enable the vertical stretch effect</summary>
+    </key>
+
+    <key name="stretch-max" type="i">
+      <default>6</default>
+      <range min="0" max="30"/>
+      <summary>Maximum vertical stretch (percent)</summary>
+    </key>
+
+    <key name="stretch-strength" type="d">
+      <default>0.004</default>
+      <range min="0.0005" max="0.02"/>
+      <summary>Stretch per pixel of vertical movement per frame</summary>
+    </key>
+
+    <key name="stretch-smoothing" type="d">
+      <default>0.2</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Stretch smoothing</summary>
+    </key>
+
+    <!-- ================= Core: lift ================= -->
+    <key name="effect-lift-enabled" type="b">
+      <default>true</default>
+      <summary>Enable the lift effect</summary>
+    </key>
+
+    <key name="lift-scale" type="d">
+      <default>1.03</default>
+      <range min="1.0" max="1.3"/>
+      <summary>Scale while dragging</summary>
+    </key>
+
+    <key name="lift-smoothing" type="d">
+      <default>0.25</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Lift smoothing</summary>
+    </key>
+
+    <!-- ================= Core: opacity ================= -->
+    <key name="effect-opacity-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the opacity effect</summary>
+    </key>
+
+    <key name="drag-opacity" type="i">
+      <default>95</default>
+      <range min="40" max="100"/>
+      <summary>Opacity while dragging (percent)</summary>
+    </key>
+
+    <key name="opacity-smoothing" type="d">
+      <default>0.2</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Opacity smoothing</summary>
+    </key>
+
+    <!-- ================= Set 2: tilt3d ================= -->
+    <key name="effect-tilt3d-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the 3D tilt effect</summary>
+    </key>
+
+    <key name="tilt3d-max-angle" type="i">
+      <default>18</default>
+      <range min="1" max="45"/>
+      <summary>Maximum 3D tilt angle (degrees)</summary>
+    </key>
+
+    <key name="tilt3d-sensitivity" type="d">
+      <default>0.5</default>
+      <range min="0.05" max="3.0"/>
+      <summary>3D tilt sensitivity</summary>
+    </key>
+
+    <key name="tilt3d-smoothing" type="d">
+      <default>0.2</default>
+      <range min="0.05" max="1.0"/>
+      <summary>3D tilt smoothing</summary>
+    </key>
+
+    <!-- ================= Set 2: speed-zoom ================= -->
+    <key name="effect-speed-zoom-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the speed zoom effect</summary>
+    </key>
+
+    <key name="speed-zoom-max" type="i">
+      <default>8</default>
+      <range min="0" max="25"/>
+      <summary>Maximum zoom (percent)</summary>
+    </key>
+
+    <key name="speed-zoom-strength" type="d">
+      <default>0.004</default>
+      <range min="0.001" max="0.05"/>
+      <summary>Zoom per pixel of pointer speed</summary>
+    </key>
+
+    <key name="speed-zoom-smoothing" type="d">
+      <default>0.25</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Speed zoom smoothing</summary>
+    </key>
+
+    <!-- ================= Set 2: squash ================= -->
+    <key name="effect-squash-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the squash effect</summary>
+    </key>
+
+    <key name="squash-max" type="i">
+      <default>12</default>
+      <range min="0" max="30"/>
+      <summary>Maximum horizontal squash (percent)</summary>
+    </key>
+
+    <key name="squash-strength" type="d">
+      <default>0.005</default>
+      <range min="0.0005" max="0.02"/>
+      <summary>Squash per pixel of horizontal speed</summary>
+    </key>
+
+    <key name="squash-smoothing" type="d">
+      <default>0.25</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Squash smoothing</summary>
+    </key>
+
+    <!-- ================= Set 2: shake ================= -->
+    <key name="effect-shake-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the shake effect</summary>
+    </key>
+
+    <key name="shake-max-angle" type="i">
+      <default>3</default>
+      <range min="0" max="15"/>
+      <summary>Maximum shake angle (degrees)</summary>
+    </key>
+
+    <key name="shake-frequency" type="d">
+      <default>12.0</default>
+      <range min="1.0" max="20.0"/>
+      <summary>Shake frequency (Hz)</summary>
+    </key>
+
+    <key name="shake-sensitivity" type="d">
+      <default>0.15</default>
+      <range min="0.02" max="1.0"/>
+      <summary>Shake speed sensitivity</summary>
+    </key>
+
+    <key name="shake-smoothing" type="d">
+      <default>0.15</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Shake amplitude smoothing</summary>
+    </key>
+
+    <!-- ================= Set 2: spring ================= -->
+    <key name="effect-spring-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the spring effect</summary>
+    </key>
+
+    <key name="spring-max-angle" type="i">
+      <default>12</default>
+      <range min="1" max="30"/>
+      <summary>Maximum spring angle (degrees)</summary>
+    </key>
+
+    <key name="spring-sensitivity" type="d">
+      <default>0.5</default>
+      <range min="0.05" max="2.0"/>
+      <summary>Spring sensitivity</summary>
+    </key>
+
+    <key name="spring-stiffness" type="d">
+      <default>0.3</default>
+      <range min="0.02" max="0.6"/>
+      <summary>Spring stiffness</summary>
+    </key>
+
+    <key name="spring-damping" type="d">
+      <default>0.8</default>
+      <range min="0.1" max="0.98"/>
+      <summary>Spring damping</summary>
+    </key>
+
+    <!-- ================= Set 2: pulse ================= -->
+    <key name="effect-pulse-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the pulse effect</summary>
+    </key>
+
+    <key name="pulse-amplitude" type="i">
+      <default>1</default>
+      <range min="0" max="5"/>
+      <summary>Pulse amplitude (percent)</summary>
+    </key>
+
+    <key name="pulse-frequency" type="d">
+      <default>1.2</default>
+      <range min="0.2" max="4.0"/>
+      <summary>Pulse frequency (Hz)</summary>
+    </key>
+
+    <!-- ================= Set 2: accel-tilt ================= -->
+    <key name="effect-accel-tilt-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the acceleration tilt effect</summary>
+    </key>
+
+    <key name="accel-tilt-max-angle" type="i">
+      <default>6</default>
+      <range min="1" max="20"/>
+      <summary>Maximum acceleration tilt angle (degrees)</summary>
+    </key>
+
+    <key name="accel-tilt-sensitivity" type="d">
+      <default>0.4</default>
+      <range min="0.05" max="2.0"/>
+      <summary>Acceleration tilt sensitivity</summary>
+    </key>
+
+    <key name="accel-tilt-smoothing" type="d">
+      <default>0.25</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Acceleration tilt smoothing</summary>
+    </key>
+
+    <!-- ================= Set 2: wobble ================= -->
+    <key name="effect-wobble-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the 3D wobble effect</summary>
+    </key>
+
+    <key name="wobble-max-angle" type="i">
+      <default>12</default>
+      <range min="1" max="30"/>
+      <summary>Maximum wobble angle (degrees)</summary>
+    </key>
+
+    <key name="wobble-frequency" type="d">
+      <default>3.5</default>
+      <range min="1.0" max="10.0"/>
+      <summary>Wobble frequency (Hz)</summary>
+    </key>
+
+    <key name="wobble-sensitivity" type="d">
+      <default>0.25</default>
+      <range min="0.02" max="1.0"/>
+      <summary>Wobble speed sensitivity</summary>
+    </key>
+
+    <key name="wobble-smoothing" type="d">
+      <default>0.18</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Wobble amplitude smoothing</summary>
+    </key>
+
+    <!-- ================= Set 2: swing ================= -->
+    <key name="effect-swing-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the swing effect</summary>
+    </key>
+
+    <key name="swing-max-angle" type="i">
+      <default>15</default>
+      <range min="1" max="45"/>
+      <summary>Maximum swing angle (degrees)</summary>
+    </key>
+
+    <key name="swing-sensitivity" type="d">
+      <default>0.12</default>
+      <range min="0.01" max="0.5"/>
+      <summary>Swing degrees per pixel of horizontal displacement</summary>
+    </key>
+
+    <key name="swing-smoothing" type="d">
+      <default>0.2</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Swing smoothing</summary>
+    </key>
+
+    <!-- ================= Set 2: jelly ================= -->
+    <key name="effect-jelly-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the jelly effect</summary>
+    </key>
+
+    <key name="jelly-max" type="i">
+      <default>8</default>
+      <range min="0" max="20"/>
+      <summary>Maximum jelly deformation (percent)</summary>
+    </key>
+
+    <key name="jelly-sensitivity" type="d">
+      <default>0.004</default>
+      <range min="0.0005" max="0.02"/>
+      <summary>Jelly acceleration sensitivity</summary>
+    </key>
+
+    <key name="jelly-stiffness" type="d">
+      <default>0.35</default>
+      <range min="0.05" max="0.8"/>
+      <summary>Jelly spring stiffness</summary>
+    </key>
+
+    <key name="jelly-damping" type="d">
+      <default>0.82</default>
+      <range min="0.5" max="0.98"/>
+      <summary>Jelly spring damping</summary>
+    </key>
+
+    <!-- ================= Set 2: fade-speed ================= -->
+    <key name="effect-fade-speed-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the speed fade effect</summary>
+    </key>
+
+    <key name="fade-speed-min" type="i">
+      <default>70</default>
+      <range min="30" max="100"/>
+      <summary>Minimum opacity (percent)</summary>
+    </key>
+
+    <key name="fade-speed-strength" type="d">
+      <default>0.006</default>
+      <range min="0.001" max="0.05"/>
+      <summary>Opacity loss per pixel of pointer speed</summary>
+    </key>
+
+    <key name="fade-speed-smoothing" type="d">
+      <default>0.2</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Speed fade smoothing</summary>
+    </key>
+
+    <!-- ================= Set 3: desaturate ================= -->
+    <key name="effect-desaturate-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the desaturate effect</summary>
+    </key>
+
+    <key name="desaturate-factor" type="i">
+      <default>60</default>
+      <range min="0" max="100"/>
+      <summary>Desaturation amount (percent)</summary>
+    </key>
+
+    <key name="desaturate-smoothing" type="d">
+      <default>0.2</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Desaturation smoothing</summary>
+    </key>
+
+    <!-- ================= Set 3: tint ================= -->
+    <key name="effect-tint-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the tint effect</summary>
+    </key>
+
+    <key name="tint-color" type="s">
+      <default>'amber'</default>
+      <summary>Tint color: amber, blue, magenta, green, red, or violet</summary>
+    </key>
+
+    <key name="tint-strength" type="d">
+      <default>0.35</default>
+      <range min="0.0" max="0.8"/>
+      <summary>Tint strength (0 to 0.8)</summary>
+    </key>
+
+    <key name="tint-smoothing" type="d">
+      <default>0.2</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Tint fade-in smoothing</summary>
+    </key>
+
+    <!-- ================= Set 3: ghost ================= -->
+    <key name="effect-ghost-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the ghost effect</summary>
+    </key>
+
+    <key name="ghost-opacity" type="i">
+      <default>35</default>
+      <range min="5" max="80"/>
+      <summary>Ghost opacity (percent)</summary>
+    </key>
+
+    <key name="ghost-lag" type="i">
+      <default>6</default>
+      <range min="1" max="20"/>
+      <summary>Ghost lag in frames of pointer movement</summary>
+    </key>
+
+    <key name="ghost-smoothing" type="d">
+      <default>0.25</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Ghost lag smoothing</summary>
+    </key>
+
+    <!-- ================= Set 3: trail ================= -->
+    <key name="effect-trail-enabled" type="b">
+      <default>false</default>
+      <summary>Enable the trail effect</summary>
+    </key>
+
+    <key name="trail-count" type="i">
+      <default>3</default>
+      <range min="1" max="5"/>
+      <summary>Number of trail copies</summary>
+    </key>
+
+    <key name="trail-opacity" type="i">
+      <default>25</default>
+      <range min="5" max="60"/>
+      <summary>Trail opacity for the nearest copy (percent)</summary>
+    </key>
+
+    <key name="trail-lag" type="i">
+      <default>5</default>
+      <range min="1" max="20"/>
+      <summary>Distance between trail copies, in frames of pointer movement</summary>
+    </key>
+
+    <key name="trail-smoothing" type="d">
+      <default>0.25</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Trail lag smoothing</summary>
+    </key>
+
+    <!-- ================= Common ================= -->
+    <key name="pivot-mode" type="s">
+      <default>'cursor'</default>
+      <summary>Transform origin: cursor or center</summary>
+    </key>
+
+    <key name="release-wobble" type="b">
+      <default>true</default>
+      <summary>Add a slight overshoot when the window settles</summary>
+    </key>
+
+    <key name="release-duration" type="i">
+      <default>260</default>
+      <range min="0" max="1000"/>
+      <summary>Release animation duration (ms)</summary>
+    </key>
+
+    <key name="frame-interval" type="i">
+      <default>16</default>
+      <range min="8" max="50"/>
+      <summary>Effect update interval (ms)</summary>
+    </key>
+
+    <key name="only-normal-windows" type="b">
+      <default>true</default>
+      <summary>Only apply to normal application windows</summary>
+    </key>
+
+    <key name="skip-maximized" type="b">
+      <default>true</default>
+      <summary>Skip fullscreen windows (maximized windows are still draggable)</summary>
+    </key>
+  </schema>
+</schemalist>

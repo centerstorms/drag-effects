@@ -1,0 +1,20 @@
+# Build outputs
+build/
+dist/
+*.shell-extension.zip
+schemas/gschemas.compiled
+
+# Local diagnostics
+*.log
+drag-effects.log
+
+# Python tooling
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp
