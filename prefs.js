@@ -4,6 +4,7 @@
 // và static controls của từng class. Thêm hiệu ứng mới không cần sửa file này.
 
 import Adw from 'gi://Adw';
+import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 
@@ -316,23 +317,47 @@ export default class DragEffectsPreferences extends ExtensionPreferences {
         reset.add(row);
 
         const support = new Adw.PreferencesGroup({
-            title: 'Buy me a coffee',
-            description: 'Drag Effects is free and open source. ' +
-                'If it is useful to you, you can support its development.',
+            title: 'Support',
+            description: 'Drag Effects is free software. If it makes your ' +
+                'desktop nicer, you can buy me a coffee.',
         });
         page.add(support);
 
+        const kofi = 'https://ko-fi.com/centerstorms';
         const coffee = new Adw.ActionRow({
-            title: 'Buy me a coffee',
-            subtitle: 'https://ko-fi.com/centerstorms',
+            title: 'Buy me a coffee on Ko-fi',
+            subtitle: kofi,
         });
 
-        const donate = new Gtk.LinkButton({
-            label: 'Donate',
-            uri: 'https://ko-fi.com/centerstorms',
+        const copy = new Gtk.Button({
+            icon_name: 'edit-copy-symbolic',
             valign: Gtk.Align.CENTER,
+            tooltip_text: 'Copy link',
         });
 
+        copy.connect('clicked', () => {
+            try {
+                Gdk.Display.get_default().get_clipboard().set_text(kofi);
+            } catch (e) {
+                logError(e);
+            }
+        });
+
+        const donate = new Gtk.Button({
+            label: 'Donate',
+            valign: Gtk.Align.CENTER,
+            css_classes: ['suggested-action'],
+        });
+
+        donate.connect('clicked', () => {
+            try {
+                Gio.AppInfo.launch_default_for_uri(kofi, null);
+            } catch (e) {
+                logError(e);
+            }
+        });
+
+        coffee.add_suffix(copy);
         coffee.add_suffix(donate);
         coffee.activatable_widget = donate;
         support.add(coffee);
