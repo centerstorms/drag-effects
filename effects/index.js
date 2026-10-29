@@ -17,16 +17,8 @@ import {OpacityEffect} from './opacity.js';
 
 // --- Set 2: motion ---
 import {Tilt3DEffect} from './tilt3d.js';
-import {SpeedZoomEffect} from './speed-zoom.js';
-import {SquashEffect} from './squash.js';
 import {ShakeEffect} from './shake.js';
 import {SpringEffect} from './spring.js';
-import {PulseEffect} from './pulse.js';
-import {AccelTiltEffect} from './accel-tilt.js';
-import {WobbleEffect} from './wobble.js';
-import {SwingEffect} from './swing.js';
-import {JellyEffect} from './jelly.js';
-import {FadeSpeedEffect} from './fade-speed.js';
 
 // --- Set 3: material ---
 import {DesaturateEffect} from './desaturate.js';
@@ -41,16 +33,8 @@ export const EFFECTS = [
     LiftEffect,
     OpacityEffect,
     Tilt3DEffect,
-    SpeedZoomEffect,
-    SquashEffect,
     ShakeEffect,
     SpringEffect,
-    PulseEffect,
-    AccelTiltEffect,
-    WobbleEffect,
-    SwingEffect,
-    JellyEffect,
-    FadeSpeedEffect,
     DesaturateEffect,
     TintEffect,
     GhostEffect,

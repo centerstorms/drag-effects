@@ -1,9 +1,17 @@
 {
-  "uuid": "drag-effects@example.com",
+  "uuid": "drag-effects@centerstorms.github.io",
   "name": "Drag Effects",
-  "description": "Pluggable effects for dragging windows: tilt, stretch, lift, wobble, swing, jelly, tint, ghost, trail, and more. Each effect is an independent module with its own switch and settings.",
-  "shell-version": ["45", "46", "47", "48", "49", "50", "51"],
-  "url": "https://github.com/your-username/drag-effects",
+  "description": "Pluggable effects for dragging windows: tilt, stretch, lift, tilt3d, shake, spring, tint, ghost, trail, and more. Each effect is an independent module with its own switch and settings.",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51"
+  ],
+  "url": "https://github.com/centerstorms/drag-effects",
   "settings-schema": "org.gnome.shell.extensions.drag-effects",
   "version-name": "3.0.0"
 }

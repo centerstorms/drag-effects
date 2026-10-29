@@ -13,7 +13,7 @@ important design rule.
 Clone the repository and run the checks:
 
 ```bash
-git clone https://github.com/your-username/drag-effects.git
+git clone https://github.com/centerstorms/drag-effects.git
 cd drag-effects
 make check
 ```

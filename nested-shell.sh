@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-UUID="drag-effects@example.com"
+UUID="drag-effects@centerstorms.github.io"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG="${TMPDIR:-/tmp}/drag-effects-nested.log"
 

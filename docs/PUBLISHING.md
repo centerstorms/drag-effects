@@ -10,7 +10,7 @@ The repository ships with development placeholders so it can be tested before
 it has a public home. Run:
 
 ```bash
-./tools/configure.sh <github-user> [repo]
+./tools/configure.sh centerstorms [repo]
 ```
 
 For example:
@@ -88,7 +88,7 @@ The working tree is already a Git repository with an initial commit. To push
 it to a new empty GitHub repository:
 
 ```bash
-git remote add origin git@github.com:<github-user>/drag-effects.git
+git remote add origin git@github.com:centerstorms/drag-effects.git
 git branch -M main
 git push -u origin main
 ```
@@ -96,7 +96,7 @@ git push -u origin main
 If you use HTTPS:
 
 ```bash
-git remote add origin https://github.com/<github-user>/drag-effects.git
+git remote add origin https://github.com/centerstorms/drag-effects.git
 ```
 
 The `CI` workflow runs on every push and pull request. It validates the

@@ -1,6 +1,6 @@
 # Drag Effects
 
-[![CI](https://github.com/your-username/drag-effects/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/drag-effects/actions/workflows/ci.yml)
+[![CI](https://github.com/centerstorms/drag-effects/actions/workflows/ci.yml/badge.svg)](https://github.com/centerstorms/drag-effects/actions/workflows/ci.yml)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![GNOME Shell](https://img.shields.io/badge/GNOME%20Shell-45%E2%80%9351-4a86cf.svg)](#compatibility)
 
@@ -8,7 +8,7 @@ Drag Effects is a **pluggable effect framework** for dragging windows in GNOME
 Shell. Every effect is an independent module with its own switch and settings in
 Preferences.
 
-- **19 effects** in three groups: core, motion, and material.
+- **11 focused effects** in three groups: core, motion, and material.
 - **Pluggable by design:** adding an effect means adding one module and schema
   keys. `extension.js` and `prefs.js` do not need to change.
 - **Safe defaults:** new effects are disabled until you enable them.
@@ -16,7 +16,7 @@ Preferences.
 - English UI, effect metadata, and documentation.
 
 > The UUID in the repository is a development placeholder. Run
-> `./tools/configure.sh <github-user>` before publishing; see
+> `./tools/configure.sh centerstorms` before publishing; see
 > [Publishing](docs/PUBLISHING.md).
 
 ## Installation
@@ -30,16 +30,16 @@ button on the site. The website also handles updates.
 ### From a GitHub release
 
 Download the latest `.shell-extension.zip` from the
-[releases page](https://github.com/your-username/drag-effects/releases), then:
+[releases page](https://github.com/centerstorms/drag-effects/releases), then:
 
 ```bash
-gnome-extensions install --force drag-effects@example.com.shell-extension.zip
+gnome-extensions install --force drag-effects@centerstorms.github.io.shell-extension.zip
 
 # Wayland: log out and back in
 # X11:     Alt+F2 -> type "r" -> Enter
 
-gnome-extensions enable drag-effects@example.com
-gnome-extensions prefs drag-effects@example.com
+gnome-extensions enable drag-effects@centerstorms.github.io
+gnome-extensions prefs drag-effects@centerstorms.github.io
 ```
 
 ### From source
@@ -47,7 +47,7 @@ gnome-extensions prefs drag-effects@example.com
 Requirements: GNOME Shell 45+, `glib-compile-schemas`, and `zip` for packaging.
 
 ```bash
-git clone https://github.com/your-username/drag-effects.git
+git clone https://github.com/centerstorms/drag-effects.git
 cd drag-effects
 make check
 ./install.sh
@@ -55,8 +55,8 @@ make check
 # Wayland: log out and back in
 # X11:     Alt+F2 -> type "r" -> Enter
 
-gnome-extensions enable drag-effects@example.com
-gnome-extensions prefs drag-effects@example.com
+gnome-extensions enable drag-effects@centerstorms.github.io
+gnome-extensions prefs drag-effects@centerstorms.github.io
 ```
 
 Or use `make install && make enable`. Uninstall with
@@ -88,16 +88,8 @@ effects take part in a drag.
 | id | Name | Output | Keys |
 | --- | --- | --- | --- |
 | `tilt3d` | 3D tilt | `rotationX`, `rotationY` | `tilt3d-max-angle`, `tilt3d-sensitivity`, `tilt3d-smoothing` |
-| `speed-zoom` | Speed zoom | `scaleX`, `scaleY` | `speed-zoom-max`, `speed-zoom-strength`, `speed-zoom-smoothing` |
-| `squash` | Squash | `scaleX`, `scaleY` | `squash-max`, `squash-strength`, `squash-smoothing` |
 | `shake` | Shake | `rotationZ` | `shake-max-angle`, `shake-frequency`, `shake-sensitivity`, `shake-smoothing` |
 | `spring` | Spring | `rotationZ` | `spring-max-angle`, `spring-sensitivity`, `spring-stiffness`, `spring-damping` |
-| `pulse` | Pulse | `scaleX`, `scaleY` | `pulse-amplitude`, `pulse-frequency` |
-| `accel-tilt` | Acceleration tilt | `rotationZ` | `accel-tilt-max-angle`, `accel-tilt-sensitivity`, `accel-tilt-smoothing` |
-| `wobble` | Wobble | `rotationY` | `wobble-max-angle`, `wobble-frequency`, `wobble-sensitivity`, `wobble-smoothing` |
-| `swing` | Swing | `rotationZ` | `swing-max-angle`, `swing-sensitivity`, `swing-smoothing` |
-| `jelly` | Jelly | `scaleX`, `scaleY` | `jelly-max`, `jelly-sensitivity`, `jelly-stiffness`, `jelly-damping` |
-| `fade-speed` | Speed fade | `opacity` | `fade-speed-min`, `fade-speed-strength`, `fade-speed-smoothing` |
 
 ### Set 3 — Material
 
@@ -203,7 +195,7 @@ The script:
 1. Installs the extension (runs `./install.sh`).
 2. Starts a nested GNOME Shell (`--nested --wayland`, or `--devkit --wayland`
    on GNOME 49+).
-3. Enables `drag-effects@example.com` inside the nested session and opens
+3. Enables `drag-effects@centerstorms.github.io` inside the nested session and opens
    Preferences on the nested display. Drag the Preferences window to test.
 4. Writes `/tmp/drag-effects-nested.log` (errors and effect messages only by
    default).
@@ -236,7 +228,7 @@ make pack-gnome     # official gnome-extensions pack, if installed
 checks every effect key against the schema, and verifies that `prefs.js` cannot
 accidentally import Clutter, Meta, Shell, Cogl, or GObject at the top level.
 
-`make pack` produces `dist/drag-effects@example.com.shell-extension.zip` with
+`make pack` produces `dist/drag-effects@centerstorms.github.io.shell-extension.zip` with
 `metadata.json` at the ZIP root. `make pack-gnome` uses the official helper and
 produces the same layout.
 
@@ -379,7 +371,7 @@ up.
 
 ```bash
 journalctl -f -o cat /usr/bin/gnome-shell
-gnome-extensions info drag-effects@example.com
+gnome-extensions info drag-effects@centerstorms.github.io
 cat ~/.cache/drag-effects.log
 ```
 
@@ -388,7 +380,7 @@ Looking Glass (`Alt+F2` → `lg`) → **Extensions** tab also shows errors.
 Quick schema/key check:
 
 ```bash
-GSETTINGS_SCHEMA_DIR=~/.local/share/gnome-shell/extensions/drag-effects@example.com/schemas \
+GSETTINGS_SCHEMA_DIR=~/.local/share/gnome-shell/extensions/drag-effects@centerstorms.github.io/schemas \
   gsettings list-keys org.gnome.shell.extensions.drag-effects
 ```
 
@@ -397,7 +389,7 @@ GSETTINGS_SCHEMA_DIR=~/.local/share/gnome-shell/extensions/drag-effects@example.
 The repository is ready for GitHub and extensions.gnome.org:
 
 1. Set the repository URL and production UUID:
-   `./tools/configure.sh <github-user> [repo]`.
+   `./tools/configure.sh centerstorms [repo]`.
 2. Run `make check-release` and `make pack`.
 3. Push the repository and tag a release; the `Release` workflow attaches the
    ZIP to the GitHub release.

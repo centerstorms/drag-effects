@@ -8,8 +8,7 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Set 2 effects: `wobble`, `swing`, `jelly`, and `fade-speed`.
-- Set 3 effects: `tint`, `ghost`, and `trail`.
+- Motion effects: `tilt3d`, `shake`, and `spring`.
 - Shared lazy Clutter loader (`lib/clutter.js`) for shader and clone effects.
 - Automatic Preferences UI generation from each effect's `static controls`.
 - Portable package builder (`tools/package.sh`) and static checks
@@ -23,6 +22,12 @@ and this project follows [Semantic Versioning](https://semver.org/).
 - `skip-maximized` now skips only fullscreen windows. Maximized windows remain
   draggable and unmaximize when dragged out.
 - The release animation, debug logging, and effect cleanup were hardened.
+
+### Removed
+
+- `speed-zoom`, `squash`, `pulse`, `accel-tilt`, `wobble`, `swing`, `jelly`,
+  and `fade-speed`. They overlapped with stronger core effects or were too
+  subtle to notice during a normal drag.
 
 ### Fixed
 
@@ -39,9 +44,7 @@ and this project follows [Semantic Versioning](https://semver.org/).
 - Initial pluggable effect registry, engine, Preferences UI, and GSettings
   schema.
 - Core effects: `tilt`, `stretch`, `lift`, and `opacity`.
-- Motion effects: `tilt3d`, `speed-zoom`, `squash`, `shake`, `spring`,
-  `pulse`, and `accel-tilt`.
 - Material effect: `desaturate`.
 
-[3.0.0]: https://github.com/your-username/drag-effects/releases/tag/v3.0.0
-[2.0.0]: https://github.com/your-username/drag-effects/releases/tag/v2.0.0
+[3.0.0]: https://github.com/centerstorms/drag-effects/releases/tag/v3.0.0
+[2.0.0]: https://github.com/centerstorms/drag-effects/releases/tag/v2.0.0

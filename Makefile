@@ -1,4 +1,4 @@
-UUID      := drag-effects@example.com
+UUID      := drag-effects@centerstorms.github.io
 SCHEMA    := org.gnome.shell.extensions.drag-effects
 DIST      := dist
 ZIP       := $(DIST)/$(UUID).shell-extension.zip
@@ -19,14 +19,14 @@ check: schemas
 	@python3 tools/check_extension.py
 
 check-release:
-	@if grep -q 'your-username' metadata.json; then \
+	@if grep -q 'centerstorms' metadata.json; then \
 		echo "error: replace the placeholder URL in metadata.json" >&2; \
-		echo "       run ./tools/configure.sh <github-user>" >&2; \
+		echo "       run ./tools/configure.sh centerstorms" >&2; \
 		exit 1; \
 	fi
 	@if grep -q '@example.com' metadata.json; then \
 		echo "error: replace the development UUID in metadata.json" >&2; \
-		echo "       run ./tools/configure.sh <github-user>" >&2; \
+		echo "       run ./tools/configure.sh centerstorms" >&2; \
 		exit 1; \
 	fi
 	@$(MAKE) check
