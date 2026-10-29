@@ -315,6 +315,28 @@ export default class DragEffectsPreferences extends ExtensionPreferences {
         row.activatable_widget = button;
         reset.add(row);
 
+        const support = new Adw.PreferencesGroup({
+            title: 'Buy me a coffee',
+            description: 'Drag Effects is free and open source. ' +
+                'If it is useful to you, you can support its development.',
+        });
+        page.add(support);
+
+        const coffee = new Adw.ActionRow({
+            title: 'Buy me a coffee',
+            subtitle: 'https://ko-fi.com/centerstorms',
+        });
+
+        const donate = new Gtk.LinkButton({
+            label: 'Donate',
+            uri: 'https://ko-fi.com/centerstorms',
+            valign: Gtk.Align.CENTER,
+        });
+
+        coffee.add_suffix(donate);
+        coffee.activatable_widget = donate;
+        support.add(coffee);
+
         return page;
     }
 

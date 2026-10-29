@@ -403,6 +403,11 @@ Bug reports, effect ideas, and pull requests are welcome. Read
 [CONTRIBUTING.md](CONTRIBUTING.md) before adding an effect or changing the
 engine.
 
+## Support
+
+If Drag Effects is useful to you, you can [buy me a coffee](https://ko-fi.com/centerstorms).
+The link is also available in the Preferences window.
+
 ## License
 
 Drag Effects is licensed under the

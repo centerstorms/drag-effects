@@ -11,6 +11,7 @@ and this project follows [Semantic Versioning](https://semver.org/).
 - Motion effects: `tilt3d`, `shake`, and `spring`.
 - Shared lazy Clutter loader (`lib/clutter.js`) for shader and clone effects.
 - Automatic Preferences UI generation from each effect's `static controls`.
+- A Ko-fi donation section in Preferences.
 - Portable package builder (`tools/package.sh`) and static checks
   (`tools/check_extension.py`).
 - GitHub Actions workflows for validation and tagged releases.
