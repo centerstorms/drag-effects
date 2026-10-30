@@ -3,7 +3,7 @@
 // Usage (paste one line into the Looking Glass evaluator, replacing the
 // extension directory if yours is installed somewhere else):
 //
-//   import('file:///home/<user>/.local/share/gnome-shell/extensions/drag-effects@centerstorms.github.io/lg-hook.js?v=' + Date.now()).then(m => m.installHook())
+//   import('file:///home/<user>/.local/share/gnome-shell/extensions/drag-effects@centerstorms/lg-hook.js?v=' + Date.now()).then(m => m.installHook())
 //
 // The hook adds a grab-op-begin handler that runs the same steps as the
 // engine, writes results and exceptions to ~/.cache/drag-effects-hook.log,
@@ -14,7 +14,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
-const UUID = 'drag-effects@centerstorms.github.io';
+const UUID = 'drag-effects@centerstorms';
 
 const LOG = Gio.File.new_for_path(GLib.build_filenamev([
     GLib.get_user_cache_dir(),

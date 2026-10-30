@@ -1,5 +1,5 @@
 {
-  "uuid": "drag-effects@centerstorms.github.io",
+  "uuid": "drag-effects@centerstorms",
   "name": "Drag Effects",
   "description": "Pluggable effects for dragging windows: tilt, stretch, lift, tilt3d, shake, spring, tint, ghost, trail, and more. Each effect is an independent module with its own switch and settings.",
   "shell-version": [

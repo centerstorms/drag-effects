@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-UUID="drag-effects@centerstorms.github.io"
+UUID="drag-effects@centerstorms"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 DEST="$DATA_HOME/gnome-shell/extensions/$UUID"

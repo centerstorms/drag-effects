@@ -33,13 +33,13 @@ Download the latest `.shell-extension.zip` from the
 [releases page](https://github.com/centerstorms/drag-effects/releases), then:
 
 ```bash
-gnome-extensions install --force drag-effects@centerstorms.github.io.shell-extension.zip
+gnome-extensions install --force drag-effects@centerstorms.shell-extension.zip
 
 # Wayland: log out and back in
 # X11:     Alt+F2 -> type "r" -> Enter
 
-gnome-extensions enable drag-effects@centerstorms.github.io
-gnome-extensions prefs drag-effects@centerstorms.github.io
+gnome-extensions enable drag-effects@centerstorms
+gnome-extensions prefs drag-effects@centerstorms
 ```
 
 ### From source
@@ -55,8 +55,8 @@ make check
 # Wayland: log out and back in
 # X11:     Alt+F2 -> type "r" -> Enter
 
-gnome-extensions enable drag-effects@centerstorms.github.io
-gnome-extensions prefs drag-effects@centerstorms.github.io
+gnome-extensions enable drag-effects@centerstorms
+gnome-extensions prefs drag-effects@centerstorms
 ```
 
 Or use `make install && make enable`. Uninstall with
@@ -195,7 +195,7 @@ The script:
 1. Installs the extension (runs `./install.sh`).
 2. Starts a nested GNOME Shell (`--nested --wayland`, or `--devkit --wayland`
    on GNOME 49+).
-3. Enables `drag-effects@centerstorms.github.io` inside the nested session and opens
+3. Enables `drag-effects@centerstorms` inside the nested session and opens
    Preferences on the nested display. Drag the Preferences window to test.
 4. Writes `/tmp/drag-effects-nested.log` (errors and effect messages only by
    default).
@@ -228,7 +228,7 @@ make pack-gnome     # official gnome-extensions pack, if installed
 checks every effect key against the schema, and verifies that `prefs.js` cannot
 accidentally import Clutter, Meta, Shell, Cogl, or GObject at the top level.
 
-`make pack` produces `dist/drag-effects@centerstorms.github.io.shell-extension.zip` with
+`make pack` produces `dist/drag-effects@centerstorms.shell-extension.zip` with
 `metadata.json` at the ZIP root. `make pack-gnome` uses the official helper and
 produces the same layout.
 
@@ -371,7 +371,7 @@ up.
 
 ```bash
 journalctl -f -o cat /usr/bin/gnome-shell
-gnome-extensions info drag-effects@centerstorms.github.io
+gnome-extensions info drag-effects@centerstorms
 cat ~/.cache/drag-effects.log
 ```
 
@@ -380,7 +380,7 @@ Looking Glass (`Alt+F2` → `lg`) → **Extensions** tab also shows errors.
 Quick schema/key check:
 
 ```bash
-GSETTINGS_SCHEMA_DIR=~/.local/share/gnome-shell/extensions/drag-effects@centerstorms.github.io/schemas \
+GSETTINGS_SCHEMA_DIR=~/.local/share/gnome-shell/extensions/drag-effects@centerstorms/schemas \
   gsettings list-keys org.gnome.shell.extensions.drag-effects
 ```
 

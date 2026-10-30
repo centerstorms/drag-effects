@@ -1,4 +1,4 @@
-UUID      := drag-effects@centerstorms.github.io
+UUID      := drag-effects@centerstorms
 SCHEMA    := org.gnome.shell.extensions.drag-effects
 DIST      := dist
 ZIP       := $(DIST)/$(UUID).shell-extension.zip
