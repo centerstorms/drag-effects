@@ -3,7 +3,18 @@
 [![CI](https://github.com/centerstorms/drag-effects/actions/workflows/ci.yml/badge.svg)](https://github.com/centerstorms/drag-effects/actions/workflows/ci.yml)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![GNOME Shell](https://img.shields.io/badge/GNOME%20Shell-45%E2%80%9351-4a86cf.svg)](#compatibility)
+## Support
 
+<p align="center">
+  Your support helps maintain and improve Drag Effects, develop new features,
+  and ensure smooth updates. Even a small donation makes a big difference!
+  <br><br>
+  <a href="https://ko-fi.com/centerstorms"><img src="assets/support-kofi.png" alt="Support Me on Ko-fi" width="300"></a>
+  <br><br>
+  Thank you for your support!
+</p>
+
+## Overview
 Drag Effects is a **pluggable effect framework** for dragging windows in GNOME
 Shell. Every effect is an independent module with its own switch and settings in
 Preferences.
