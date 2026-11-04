@@ -1,5 +1,5 @@
-// Hiệu ứng 1: xoay cửa sổ theo quán tính ngang.
-// Ghi vào frame.rotationZ.
+// Effect 1: rotate the window with horizontal inertia.
+// Writes to frame.rotationZ.
 
 import {DragEffect, alphaFor, timeScale} from '../lib/effect.js';
 import {readDouble, readInt} from '../lib/settings.js';

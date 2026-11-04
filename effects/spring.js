@@ -1,8 +1,9 @@
-// Hiệu ứng: lò xo.
-// Ghi vào frame.rotationZ.
+// Effect: spring.
+// Writes to frame.rotationZ.
 //
-// Cửa sổ xoay như được gắn vào một lò xo: bám theo hướng kéo, vượt qua
-// đích rồi dao động tắt dần (overshoot) thay vì bám cứng như "tilt".
+// The window rotates as if attached to a spring: it follows the drag
+// direction, overshoots the target and oscillates until it settles, instead
+// of following rigidly like "tilt".
 
 import {DragEffect} from '../lib/effect.js';
 import {readDouble, readInt} from '../lib/settings.js';
@@ -58,8 +59,8 @@ export class SpringEffect extends DragEffect {
 
         const target = clamp(ctx.dx * sensitivity, -max, max);
 
-        // Chia khung dài thành nhiều bước nhỏ để tích phân ổn định, và để tốc
-        // độ dao động không phụ thuộc frame-interval.
+        // Split long frames into small steps for stable integration, and so
+        // the oscillation speed does not depend on the frame-interval.
         const steps = Math.min(4, Math.max(1, Math.round(ctx.dt / 16.67)));
         const stepK = Math.min(2, Math.max(0.1, (ctx.dt / steps) / 16.67));
 

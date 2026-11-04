@@ -15,18 +15,19 @@ schemas/gschemas.compiled: $(wildcard schemas/*.gschema.xml)
 
 check: schemas
 	@python3 -m json.tool metadata.json >/dev/null
-	@bash -n install.sh nested-shell.sh tools/package.sh tools/configure.sh
+	@bash -n install.sh tools/package.sh tools/configure.sh
+	@if [ -f nested-shell.sh ]; then bash -n nested-shell.sh; fi
 	@python3 tools/check_extension.py
 
 check-release:
-	@if grep -q 'centerstorms' metadata.json; then \
+	@if grep -q 'your-username' metadata.json; then \
 		echo "error: replace the placeholder URL in metadata.json" >&2; \
-		echo "       run ./tools/configure.sh centerstorms" >&2; \
+		echo "       run ./tools/configure.sh centerstorms drag-effects" >&2; \
 		exit 1; \
 	fi
 	@if grep -q '@example.com' metadata.json; then \
 		echo "error: replace the development UUID in metadata.json" >&2; \
-		echo "       run ./tools/configure.sh centerstorms" >&2; \
+		echo "       run ./tools/configure.sh centerstorms drag-effects" >&2; \
 		exit 1; \
 	fi
 	@$(MAKE) check
@@ -65,8 +66,10 @@ release: check-release pack
 	@echo "Ready to upload: $(ZIP)"
 	@echo "GNOME Extensions: https://extensions.gnome.org/upload/"
 
+# Local helper (not tracked in git). Kept as a convenience target when the
+# script is present in the working tree.
 nested:
-	./nested-shell.sh
+	@bash -c 'if [ -f nested-shell.sh ]; then ./nested-shell.sh; else echo "error: nested-shell.sh is not present (it is ignored by git)" >&2; exit 1; fi'
 
 clean:
 	rm -rf build dist schemas/gschemas.compiled

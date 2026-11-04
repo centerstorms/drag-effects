@@ -25,10 +25,11 @@ install() {
         exit 1
     fi
 
-    mkdir -p "$DEST/schemas" "$DEST/lib" "$DEST/effects"
+    mkdir -p "$DEST/schemas" "$DEST/lib" "$DEST/effects" "$DEST/assets"
     cp "$HERE/metadata.json" "$HERE/extension.js" "$HERE/prefs.js" "$HERE/lg-hook.js" "$DEST/"
     cp "$HERE/lib/"*.js "$DEST/lib/"
     cp "$HERE/effects/"*.js "$DEST/effects/"
+    cp "$HERE/assets/"*.png "$DEST/assets/"
 
     rm -f "$DEST/schemas/"*.gschema.xml "$DEST/schemas/gschemas.compiled"
     cp "$HERE/schemas/"*.gschema.xml "$DEST/schemas/"

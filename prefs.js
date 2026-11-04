@@ -1,10 +1,10 @@
 // Drag Effects - Preferences
 //
-// Toàn bộ UI của phần hiệu ứng được sinh tự động từ EFFECTS (effects/index.js)
-// và static controls của từng class. Thêm hiệu ứng mới không cần sửa file này.
+// The entire effects UI is generated automatically from EFFECTS
+// (effects/index.js) plus the static controls of each effect class.
+// Adding a new effect does not require editing this file.
 
 import Adw from 'gi://Adw';
-import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 
@@ -318,49 +318,72 @@ export default class DragEffectsPreferences extends ExtensionPreferences {
 
         const support = new Adw.PreferencesGroup({
             title: 'Support',
-            description: 'Drag Effects is free software. If it makes your ' +
-                'desktop nicer, you can buy me a coffee.',
+            description: 'Your support helps maintain and improve Drag ' +
+                'Effects, develop new features, and ensure smooth updates. ' +
+                'Even a small donation makes a big difference!',
         });
         page.add(support);
 
         const kofi = 'https://ko-fi.com/centerstorms';
-        const coffee = new Adw.ActionRow({
-            title: 'Buy me a coffee on Ko-fi',
-            subtitle: kofi,
-        });
 
-        const copy = new Gtk.Button({
-            icon_name: 'edit-copy-symbolic',
-            valign: Gtk.Align.CENTER,
-            tooltip_text: 'Copy link',
+        const thanks = new Adw.PreferencesGroup({
+            title: 'Thank you for your support!',
         });
+        page.add(thanks);
 
-        copy.connect('clicked', () => {
-            try {
-                Gdk.Display.get_default().get_clipboard().set_text(kofi);
-            } catch (e) {
-                logError(e);
-            }
-        });
-
-        const donate = new Gtk.Button({
-            label: 'Donate',
-            valign: Gtk.Align.CENTER,
-            css_classes: ['suggested-action'],
-        });
-
-        donate.connect('clicked', () => {
+        // Ko-fi badge image button below the greeting.
+        const openKofi = () => {
             try {
                 Gio.AppInfo.launch_default_for_uri(kofi, null);
             } catch (e) {
                 logError(e);
             }
-        });
+        };
 
-        coffee.add_suffix(copy);
-        coffee.add_suffix(donate);
-        coffee.activatable_widget = donate;
-        support.add(coffee);
+        const badgeRow = new Adw.PreferencesRow({activatable: false});
+        const badgeBox = new Gtk.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            spacing: 6,
+            margin_top: 14,
+            margin_bottom: 14,
+        });
+        const badge = new Gtk.Button({
+            tooltip_text: 'Support Drag Effects on Ko-fi',
+            css_classes: ['flat'],
+            has_frame: false,
+            halign: Gtk.Align.CENTER,
+        });
+        badge.connect('clicked', openKofi);
+
+        try {
+            // Resolve the asset path relative to this file with plain Gio.File
+            // calls; WHATWG URL globals are not guaranteed in every GJS version.
+            const extDir = Gio.File.new_for_uri(import.meta.url).get_parent()
+                .get_child('assets');
+            const asset = extDir.get_child('support-kofi.png');
+            if (!asset.query_exists(null)) {
+                throw new Error('not found: ' + asset.get_path());
+            }
+            const badgeImage = new Gtk.Picture({
+                file: asset,
+                alternative_text: 'Support Me on Ko-fi',
+                content_fit: Gtk.ContentFit.SCALE,
+                can_shrink: true,
+            });
+            badgeImage.set_size_request(300, 102);
+            badge.set_child(badgeImage);
+        } catch (e) {
+            console.error('Drag Effects: Ko-fi badge image unavailable:', e);
+            const fallback = new Gtk.Label();
+            fallback.set_markup(
+                '<span size="larger" weight="bold">☕ Support Me</span>\n' +
+                '<span size="smaller" weight="bold">on Ko-fi</span>');
+            badge.set_child(fallback);
+        }
+
+        badgeBox.append(badge);
+        badgeRow.child = badgeBox;
+        thanks.add(badgeRow);
 
         return page;
     }

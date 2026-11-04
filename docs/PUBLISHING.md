@@ -26,8 +26,8 @@ This updates `metadata.json`:
 "uuid": "drag-effects@octocat.github.io"
 ```
 
-It also updates the UUID in `install.sh`, `nested-shell.sh`, `Makefile`, and
-the documentation. Use `--keep-uuid` if you already have a production UUID, or
+It also updates the UUID in `install.sh`, `Makefile`, and the documentation.
+Use `--keep-uuid` if you already have a production UUID, or
 `--uuid name@example.org` to provide a custom one.
 
 > The UUID is part of the installed directory name. Reinstall the extension

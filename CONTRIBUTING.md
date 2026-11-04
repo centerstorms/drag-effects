@@ -23,17 +23,17 @@ effect control keys, and the lazy-Clutter rule.
 
 ## Testing
 
-Use a nested shell so you do not have to log out:
+Use the local nested-shell helper (`nested-shell.sh`, kept out of the
+repository) so you do not have to log out:
 
 ```bash
 ./nested-shell.sh
 ```
 
-Enable the effects in Preferences and drag a window. Read the diagnostics with:
-
-```bash
-cat ~/.cache/drag-effects.log
-```
+Enable the effects in Preferences and drag a window. Diagnostics are
+disabled by default; enable them by running the nested shell with
+`DRAG_EFFECTS_DEBUG=1 ./nested-shell.sh`, then inspect the journal with
+`journalctl --user -f | grep drag-effects`.
 
 The first drag after startup may skip effects that need Clutter while the
 lazy import completes; drag a second time.
@@ -45,7 +45,8 @@ lazy import completes; drag a second time.
 3. Add `effect-<id>-enabled` and every control key to
    `schemas/org.gnome.shell.extensions.drag-effects.gschema.xml`.
 4. Register the class in `effects/index.js`.
-5. Run `make check` and test with `./nested-shell.sh`.
+5. Run `make check` and, if you keep the local `nested-shell.sh` helper,
+   test with it.
 
 You do **not** need to edit `extension.js` or `prefs.js`.
 

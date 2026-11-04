@@ -9,6 +9,7 @@
 #   prefs.js
 #   lib/*.js
 #   effects/*.js
+#   assets/*
 #   schemas/*.gschema.xml
 #   schemas/gschemas.compiled
 
@@ -33,7 +34,7 @@ rm -rf "$BUILD" "$ZIP"
 mkdir -p "$BUILD/schemas" "$DIST"
 
 cp "$ROOT/metadata.json" "$ROOT/extension.js" "$ROOT/prefs.js" "$BUILD/"
-cp -R "$ROOT/lib" "$ROOT/effects" "$BUILD/"
+cp -R "$ROOT/lib" "$ROOT/effects" "$ROOT/assets" "$BUILD/"
 rm -f "$BUILD/effects/_template.js"
 find "$BUILD" -type d -name '__pycache__' -prune -exec rm -rf {} +
 
@@ -43,7 +44,7 @@ glib-compile-schemas "$BUILD/schemas"
 (
     cd "$BUILD"
     zip -X -q -r "$ZIP" \
-        metadata.json extension.js prefs.js lib effects schemas
+        metadata.json extension.js prefs.js lib effects assets schemas
 )
 
 echo "Created: $ZIP"

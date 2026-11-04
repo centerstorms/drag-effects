@@ -13,5 +13,8 @@
   ],
   "url": "https://github.com/centerstorms/drag-effects",
   "settings-schema": "org.gnome.shell.extensions.drag-effects",
+  "donations": {
+    "kofi": "centerstorms"
+  },
   "version-name": "3.0.0"
 }

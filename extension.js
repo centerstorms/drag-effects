@@ -1,12 +1,12 @@
 // Drag Effects - engine
 //
-// Engine không biết gì về từng hiệu ứng cụ thể. Nó chỉ:
-//   1. Bắt grab-op-begin / grab-op-end của Meta.Display.
-//   2. Gọi start()/update()/stop() trên các hiệu ứng đang bật.
-//   3. Tổng hợp Frame rồi áp lên MetaWindowActor.
-//   4. Chạy animation trả về khi thả chuột.
+// The engine knows nothing about individual effects. It only:
+//   1. Listens to grab-op-begin / grab-op-end on Meta.Display.
+//   2. Calls start()/update()/stop() on the enabled effects.
+//   3. Aggregates a Frame and applies it to the MetaWindowActor.
+//   4. Runs a settle animation when the pointer is released.
 //
-// Muốn thêm hiệu ứng: xem effects/_template.js và effects/index.js.
+// To add an effect: see effects/_template.js and effects/index.js.
 
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
@@ -16,15 +16,15 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import {EFFECTS} from './effects/index.js';
 import {Frame} from './lib/frame.js';
-import {debugLog, resetDebugLog} from './lib/debug.js';
+import {debugLog} from './lib/debug.js';
 
 const EASING = Clutter.AnimationMode;
 const MIN_INTERVAL = 8;
 const MAX_INTERVAL = 50;
 
-// MetaGrabOp dùng các bit cao cho cờ (keyboard, unconstrained, hướng kéo).
-// MOVING có thể đến dưới dạng MOVING (Wayland) hoặc MOVING_UNCONSTRAINED
-// (X11/XWayland), nên so sánh sau khi bỏ các bit cờ.
+// MetaGrabOp uses the high bits for flags (keyboard, unconstrained, drag
+// direction). MOVING can arrive as MOVING (Wayland) or MOVING_UNCONSTRAINED
+// (X11/XWayland), so compare after masking out the flag bits.
 const GRAB_OP_FLAGS_MASK = 0x0f00;
 
 const isMovingOp = op =>
@@ -34,7 +34,6 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
 export default class DragEffectsExtension extends Extension {
     enable() {
-        resetDebugLog();
         debugLog('enable: extension enabled');
 
         this._settings = this.getSettings();
@@ -54,13 +53,10 @@ export default class DragEffectsExtension extends Extension {
         this._active = [];
         this._destroyId = 0;
         this._destroyed = false;
+        this._resetId = 0;
         this._tickId = 0;
         this._startedAt = 0;
         this._lastTick = 0;
-
-        // Giữ bộ đếm qua các lần disable/enable để timeout cũ tự huỷ.
-        if (this._epoch === undefined)
-            this._epoch = 0;
 
         this._beginId = global.display.connect('grab-op-begin',
             (_display, win, op) => this._onGrabBegin(win, op));
@@ -146,9 +142,9 @@ export default class DragEffectsExtension extends Extension {
             return;
         }
 
-        // Cửa sổ maximized vẫn kéo được: Mutter sẽ "shake loose" (bỏ
-        // maximized) ngay khi chuột di chuyển. Chỉ fullscreen mới thực sự
-        // không kéo được, nên chỉ lọc fullscreen.
+        // Maximized windows can still be dragged: Mutter "shakes them loose"
+        // (unmaximizes) as soon as the pointer moves. Only fullscreen windows
+        // really cannot be dragged, so only those are filtered out.
         if (settings.get_boolean('skip-maximized') && win.is_fullscreen()) {
             debugLog('  -> skip: fullscreen');
             return;
@@ -172,13 +168,16 @@ export default class DragEffectsExtension extends Extension {
             }
             : {x: 0.5, y: 0.5};
 
-        this._epoch++;
+        // Cancel any pending settle timeout from the previous release so it
+        // cannot fire in the middle of this drag.
+        this._clearResetSource();
+
         this._actor = actor;
         this._destroyed = false;
         this._active = [];
 
-        // Huỷ animation còn dang dở (kể cả của lần thả trước) để tick của
-        // engine toàn quyền điều khiển transform.
+        // Cancel leftover animations (including from the previous release) so
+        // the engine tick has full control over the transform.
         this._clearTransitions(actor);
         actor.set_pivot_point(pivot.x, pivot.y);
 
@@ -206,7 +205,8 @@ export default class DragEffectsExtension extends Extension {
             } catch (e) {
                 logError(e);
                 debugLog(`  -> start failed for ${effect.constructor.id}: ${e}`);
-                // start() có thể đã gắn effect/clone dở dang: dọn lại.
+                // start() may have attached a half-ready effect or clone to
+                // the actor: clean it up before continuing.
                 try {
                     effect.stop(this._ctx);
                 } catch (err) {
@@ -254,8 +254,10 @@ export default class DragEffectsExtension extends Extension {
         const actor = this._actor;
         const ctx = this._ctx;
 
-        if (!actor || !ctx || this._active.length === 0)
+        if (!actor || !ctx || this._active.length === 0) {
+            this._tickId = 0;
             return GLib.SOURCE_REMOVE;
+        }
 
         const now = GLib.get_monotonic_time() / 1000;
         const [px, py] = global.get_pointer();
@@ -279,7 +281,8 @@ export default class DragEffectsExtension extends Extension {
             } catch (e) {
                 logError(e);
                 debugLog(`  -> update failed for ${effect.constructor.id}: ${e}`);
-                // Hiệu ứng lỗi thì bỏ ra khỏi vòng lặp, tránh spam log mỗi khung.
+                // Drop the failing effect from the loop to avoid log spam on
+                // every frame.
                 this._active = this._active.filter(item => item !== effect);
                 try {
                     effect.stop(ctx);
@@ -294,6 +297,7 @@ export default class DragEffectsExtension extends Extension {
         } catch (e) {
             logError(e);
             debugLog(`  -> _applyFrame failed: ${e}`);
+            this._tickId = 0;
             return GLib.SOURCE_REMOVE;
         }
 
@@ -329,6 +333,8 @@ export default class DragEffectsExtension extends Extension {
             this._tickId = 0;
         }
 
+        this._clearResetSource();
+
         const actor = this._actor;
         const ctx = this._ctx;
         const active = this._active;
@@ -346,13 +352,13 @@ export default class DragEffectsExtension extends Extension {
             try {
                 actor.disconnect(this._destroyId);
             } catch (e) {
-                // actor đã bị huỷ
+                // The actor was already destroyed.
             }
             this._destroyId = 0;
         }
 
-        // Luôn gọi stop() kể cả khi actor đã bị huỷ: hiệu ứng có thể đang giữ
-        // tài nguyên bên ngoài actor (effect phụ, clone, timeout...).
+        // Always call stop() even if the actor is destroyed: effects may hold
+        // on to resources outside the actor (sub-effects, clones, timeouts...).
         for (const effect of active) {
             try {
                 effect.stop(ctx);
@@ -373,8 +379,6 @@ export default class DragEffectsExtension extends Extension {
             return;
         }
 
-        const epoch = ++this._epoch;
-
         try {
             actor.ease({
                 rotation_angle_x: 0,
@@ -390,20 +394,27 @@ export default class DragEffectsExtension extends Extension {
             return;
         }
 
-        // Trả tâm biến đổi về giữa sau khi animation kết thúc. Nếu người dùng
-        // đã bắt đầu kéo cửa sổ khác thì bỏ qua (epoch đã đổi).
-        GLib.timeout_add(GLib.PRIORITY_DEFAULT, duration + 60, () => {
-            if (this._epoch !== epoch)
-                return GLib.SOURCE_REMOVE;
+        // Restore the transform pivot to the center once the animation
+        // finishes. The source handle is stored so that _stop() (including the
+        // one invoked by disable()) can remove this source at any time.
+        this._resetId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, duration + 60, () => {
+            this._resetId = 0;
 
             try {
                 actor.set_pivot_point(0.5, 0.5);
             } catch (e) {
-                // actor đã bị huỷ
+                // The actor was already destroyed.
             }
 
             return GLib.SOURCE_REMOVE;
         });
+    }
+
+    _clearResetSource() {
+        if (this._resetId) {
+            GLib.source_remove(this._resetId);
+            this._resetId = 0;
+        }
     }
 
     _resetActor(actor) {
@@ -415,7 +426,7 @@ export default class DragEffectsExtension extends Extension {
             actor.opacity = 255;
             actor.set_pivot_point(0.5, 0.5);
         } catch (e) {
-            // actor đã bị huỷ
+            // The actor was already destroyed.
         }
     }
 
@@ -423,7 +434,7 @@ export default class DragEffectsExtension extends Extension {
         try {
             actor.remove_all_transitions();
         } catch (e) {
-            // phiên bản Clutter cũ: bỏ qua
+            // Older Clutter versions without this API: ignore.
         }
     }
 }

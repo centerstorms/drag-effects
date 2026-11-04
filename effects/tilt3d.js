@@ -1,8 +1,9 @@
-// Hiệu ứng: nghiêng 3D.
-// Ghi vào frame.rotationX / frame.rotationY.
+// Effect: 3D tilt.
+// Writes to frame.rotationX / frame.rotationY.
 //
-// Clutter chiếu rotation_angle_x/y qua perspective của stage nên cửa sổ có
-// cảm giác nghiêng trong không gian thay vì chỉ bị bóp méo 2D.
+// Clutter projects rotation_angle_x/y through the stage perspective, which
+// makes the window appear to tilt in space instead of being flatly
+// distorted in 2D.
 
 import {DragEffect, alphaFor, timeScale} from '../lib/effect.js';
 import {readDouble, readInt} from '../lib/settings.js';
@@ -49,7 +50,8 @@ export class Tilt3DEffect extends DragEffect {
         const smoothing = readDouble(this.settings, 'tilt3d-smoothing', 0.2);
         const alpha = alphaFor(smoothing, timeScale(ctx.dt));
 
-        // Kéo ngang -> xoay quanh trục Y; kéo dọc -> xoay quanh trục X.
+        // Horizontal drag -> rotate around the Y axis; vertical drag ->
+        // rotate around the X axis.
         const yawTarget = clamp(ctx.dx * sensitivity, -max, max);
         const pitchTarget = clamp(-ctx.dy * sensitivity, -max, max);
 

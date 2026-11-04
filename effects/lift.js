@@ -1,5 +1,5 @@
-// Hiệu ứng 3: "nhấc" cửa sổ lên một chút khi bắt đầu kéo.
-// Ghi vào frame.scaleX và frame.scaleY.
+// Effect 3: "lift" the window slightly when a drag starts.
+// Writes to frame.scaleX and frame.scaleY.
 
 import {DragEffect, alphaFor, timeScale} from '../lib/effect.js';
 import {readDouble} from '../lib/settings.js';

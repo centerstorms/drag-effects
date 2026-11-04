@@ -1,5 +1,5 @@
-// Hiệu ứng 2: giãn cửa sổ theo phương dọc khi kéo nhanh lên/xuống.
-// Ghi vào frame.scaleY.
+// Effect 2: stretch the window vertically when dragging up/down quickly.
+// Writes to frame.scaleY.
 
 import {DragEffect, alphaFor, timeScale} from '../lib/effect.js';
 import {readDouble, readInt} from '../lib/settings.js';

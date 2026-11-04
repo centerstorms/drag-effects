@@ -1,8 +1,9 @@
-// Hiệu ứng: rung.
-// Ghi vào frame.rotationZ.
+// Effect: shake.
+// Writes to frame.rotationZ.
 //
-// Amplitude rung tỉ lệ với tốc độ kéo và tắt dần khi ngừng tay. Frequency tính
-// theo thời gian thực (Hz) nên không phụ thuộc frame-interval.
+// Shake amplitude scales with the drag speed and dies out as the pointer
+// slows down. Frequency is computed in real time (Hz) so it does not
+// depend on the frame-interval.
 
 import {DragEffect, alphaFor, timeScale} from '../lib/effect.js';
 import {readDouble, readInt} from '../lib/settings.js';

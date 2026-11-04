@@ -8,6 +8,10 @@ schemas/gschemas.compiled
 *.log
 drag-effects.log
 
+# Local development helper (kept out of the published repo)
+nested-shell.sh
+nested-shell
+
 # Python tooling
 __pycache__/
 *.py[cod]

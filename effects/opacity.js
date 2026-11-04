@@ -1,5 +1,5 @@
-// Hiệu ứng 4: làm cửa sổ hơi trong suốt trong lúc kéo.
-// Ghi vào frame.opacity (0..255).
+// Effect 4: make the window slightly transparent while dragging.
+// Writes to frame.opacity (0..255).
 
 import {DragEffect, alphaFor, timeScale} from '../lib/effect.js';
 import {readDouble, readInt} from '../lib/settings.js';

@@ -3,6 +3,7 @@
 [![CI](https://github.com/centerstorms/drag-effects/actions/workflows/ci.yml/badge.svg)](https://github.com/centerstorms/drag-effects/actions/workflows/ci.yml)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![GNOME Shell](https://img.shields.io/badge/GNOME%20Shell-45%E2%80%9351-4a86cf.svg)](#compatibility)
+
 ## Support
 
 <p align="center">
@@ -15,6 +16,7 @@
 </p>
 
 ## Overview
+
 Drag Effects is a **pluggable effect framework** for dragging windows in GNOME
 Shell. Every effect is an independent module with its own switch and settings in
 Preferences.
@@ -23,20 +25,41 @@ Preferences.
 - **Pluggable by design:** adding an effect means adding one module and schema
   keys. `extension.js` and `prefs.js` do not need to change.
 - **Safe defaults:** new effects are disabled until you enable them.
-- **GNOME Shell 45–51**, Wayland and X11.
-- English UI, effect metadata, and documentation.
+- **GNOME Shell 45–51**, Wayland and X11. English UI and documentation.
 
-> The UUID in the repository is a development placeholder. Run
-> `./tools/configure.sh centerstorms` before publishing; see
-> [Publishing](docs/PUBLISHING.md).
+## Effects
+
+| Set | Effect | What it does |
+| --- | --- | --- |
+| Core | Tilt | Rotates the window with horizontal inertia |
+| Core | Stretch | Stretches the window vertically on fast upward/downward drags |
+| Core | Lift | Shrinks the window slightly, like lifting it off the desktop |
+| Core | Opacity | Fades the window a little while dragging |
+| Motion | 3D Tilt | Tilts the window in space around both screen axes |
+| Motion | Shake | Shakes the window proportionally to drag speed |
+| Motion | Spring | Follows the drag with an elastic overshoot and oscillation |
+| Material | Desaturate | Drains color from the window while dragging |
+| Material | Tint | Overlays the drag direction with a chosen color tint |
+| Material | Ghost | Leaves a single translucent afterimage lagging behind |
+| Material | Trail | Leaves a short trail of translucent afterimages |
+
+Every effect has its own switch in Preferences. Core effects are on by default;
+motion and material effects are off by default.
+
+Common settings: `pivot-mode` (transform origin at the pointer or the window
+center), `release-wobble`, `release-duration`, `frame-interval`,
+`only-normal-windows`, and `skip-maximized`.
+
+> Do not run this extension together with **Compiz windows effect** or similar
+> window-transform extensions.
 
 ## Installation
 
 ### From extensions.gnome.org
 
 Once the extension is published, install it from its page on
-[extensions.gnome.org](https://extensions.gnome.org/) or with the install
-button on the site. The website also handles updates.
+[extensions.gnome.org](https://extensions.gnome.org/). The website also
+handles updates.
 
 ### From a GitHub release
 
@@ -55,7 +78,7 @@ gnome-extensions prefs drag-effects@centerstorms
 
 ### From source
 
-Requirements: GNOME Shell 45+, `glib-compile-schemas`, and `zip` for packaging.
+Requirements: GNOME Shell 45+, `glib-compile-schemas`, and `zip`.
 
 ```bash
 git clone https://github.com/centerstorms/drag-effects.git
@@ -70,100 +93,13 @@ gnome-extensions enable drag-effects@centerstorms
 gnome-extensions prefs drag-effects@centerstorms
 ```
 
-Or use `make install && make enable`. Uninstall with
+`make install && make enable` also works; uninstall with
 `./install.sh uninstall` or `make uninstall`.
 
 > **Important:** GNOME Shell scans extension directories **once at startup**.
 > If you copy files while logged in, the shell will not see the new code until
 > you log out and back in (Wayland) or run a nested shell. Disabling and
-> re-enabling the extension in the Extensions app does **not** reload ESM
-> modules.
-
-## Effects
-
-Every effect has its own switch: `effect-<id>-enabled`. Set 2 and Set 3 effects
-default to **off**. Enable the ones you want in Preferences; only enabled
-effects take part in a drag.
-
-### Set 1 — Core
-
-| id | Name | Output | Keys |
-| --- | --- | --- | --- |
-| `tilt` | Inertial tilt | `rotationZ` | `tilt-max-angle`, `tilt-sensitivity`, `tilt-smoothing` |
-| `stretch` | Vertical stretch | `scaleY` | `stretch-max`, `stretch-strength`, `stretch-smoothing` |
-| `lift` | Lift | `scaleX`, `scaleY` | `lift-scale`, `lift-smoothing` |
-| `opacity` | Fade | `opacity` | `drag-opacity`, `opacity-smoothing` |
-
-### Set 2 — Motion
-
-| id | Name | Output | Keys |
-| --- | --- | --- | --- |
-| `tilt3d` | 3D tilt | `rotationX`, `rotationY` | `tilt3d-max-angle`, `tilt3d-sensitivity`, `tilt3d-smoothing` |
-| `shake` | Shake | `rotationZ` | `shake-max-angle`, `shake-frequency`, `shake-sensitivity`, `shake-smoothing` |
-| `spring` | Spring | `rotationZ` | `spring-max-angle`, `spring-sensitivity`, `spring-stiffness`, `spring-damping` |
-
-### Set 3 — Material
-
-| id | Name | Output | Keys |
-| --- | --- | --- | --- |
-| `desaturate` | Desaturate | `Clutter.DesaturateEffect` | `desaturate-factor`, `desaturate-smoothing` |
-| `tint` | Tint | custom `Clutter.ShaderEffect` | `tint-color`, `tint-strength`, `tint-smoothing` |
-| `ghost` | Ghost | one `Clutter.Clone` | `ghost-opacity`, `ghost-lag`, `ghost-smoothing` |
-| `trail` | Trail | multiple `Clutter.Clone` actors | `trail-count`, `trail-opacity`, `trail-lag`, `trail-smoothing` |
-
-`tint` uses a small custom GLSL shader instead of `Clutter.ColorizeEffect`,
-whose color type changed between GNOME releases. `ghost` and `trail` insert
-translucent clones below the dragged window actor, so the original window stays
-sharp.
-
-Common settings apply to every effect:
-
-- `pivot-mode` — transform origin: pointer or window center.
-- `release-wobble` — overshoot easing when the window settles.
-- `release-duration` — release animation in milliseconds.
-- `frame-interval` — update interval in milliseconds.
-- `only-normal-windows` — skip dialogs, popups, docks, and utilities.
-- `skip-maximized` — skip fullscreen windows only. Maximized windows are still
-  draggable; dragging one out unmaximizes it.
-
-## Architecture
-
-```
-                 grab-op-begin / grab-op-end
-                              │
-                     ┌────────▼────────┐
-                     │  extension.js   │  engine
-                     │  (does not know │
-                     │   any effect)   │
-                     └────────┬────────┘
-                              │ start / update / stop
-        ┌───────────┬─────────┼─────────┬───────────┐
-        ▼           ▼         ▼         ▼           ▼
-     tilt.js   stretch.js  lift.js  opacity.js  (new effect)
-        └───────────┴─────────┼─────────┴───────────┘
-                              ▼
-                        Frame {rotationX, rotationY, rotationZ,
-                               scaleX, scaleY, opacity}
-                              │
-                              ▼
-                  Meta.WindowActor (transform + opacity)
-```
-
-- `lib/effect.js` — `DragEffect` base class plus `timeScale`/`alphaFor`
-  helpers.
-- `lib/frame.js` — per-frame accumulator. Effects write into the same frame
-  instead of racing to set actor properties.
-- `lib/settings.js` — safe GSettings reads with fallbacks when a key is not
-  present yet.
-- `lib/clutter.js` — lazy Clutter loader for shader/clone effects.
-- `effects/index.js` — the `EFFECTS` registry, which is also the order shown
-  in Preferences.
-- `prefs.js` — builds the UI from each effect's `static controls`.
-
-Effects may also attach a `Clutter.Effect` directly to the actor in `start()`
-and remove it in `stop()` (see `desaturate`, `tint`, `ghost`, and `trail`).
-The engine always calls `stop()`, even when the window is closed or the actor
-is destroyed mid-drag, so external resources are cleaned up.
+> re-enabling the extension does **not** reload ESM modules.
 
 ## Compatibility
 
@@ -171,253 +107,89 @@ is destroyed mid-drag, so external resources are cleaned up.
 | --- | --- |
 | 45, 46, 47, 48, 49, 50, 51 | Supported (ESM) |
 
-Wayland and X11 are supported. The primary development target is GNOME Shell
-50. Effects that need Clutter import it lazily, so the first drag after shell
-startup may skip them while the import completes; later drags work normally.
+Effects that need Clutter (shaders, clones) import it lazily, so the very first
+drag after shell startup may skip them while the import completes; later drags
+work normally.
 
-`tint` uses the full-shader `Clutter.ShaderEffect` API. If a future shell version
-removes that API, the effect logs a diagnostic and is skipped while the other
-effects keep working.
+## How it works
+
+```
+                 grab-op-begin / grab-op-end
+                              │
+                     ┌────────▼────────┐
+                     │  extension.js   │   engine (knows no effect)
+                     └────────┬────────┘
+                              │ start / update / stop
+      ┌───────────┬───────────┼───────────┬──────────┐
+      ▼           ▼           ▼           ▼          ▼
+   tilt.js    stretch.js    lift.js    opacity.js  (new effect)
+      └───────────┴───────────┼───────────┴──────────┘
+                              ▼
+            Frame {rotationX, rotationY, rotationZ,
+                   scaleX, scaleY, opacity}
+                              │
+                              ▼
+                Meta.WindowActor (transform + opacity)
+```
+
+Each effect only writes into a shared `Frame`; the engine aggregates it and
+applies it to the window actor once per frame. `prefs.js` builds the whole
+Preferences UI from each effect's `static controls` — adding an effect needs no
+engine or preferences changes.
 
 ## Development
-
-### Repository layout
-
-```text
-extension.js                 engine and actor application
-prefs.js                     generated Preferences UI
-effects/                     one module per effect; index.js is the registry
-lib/                         shared helpers and lazy loaders
-schemas/                     GSettings schema
-tools/                       validation, packaging, and configuration
-docs/                        publishing notes
-```
-
-### Nested shell
-
-On **Wayland**, test changes without logging out:
-
-```bash
-./nested-shell.sh
-```
-
-The script:
-
-1. Installs the extension (runs `./install.sh`).
-2. Starts a nested GNOME Shell (`--nested --wayland`, or `--devkit --wayland`
-   on GNOME 49+).
-3. Enables `drag-effects@centerstorms` inside the nested session and opens
-   Preferences on the nested display. Drag the Preferences window to test.
-4. Writes `/tmp/drag-effects-nested.log` (errors and effect messages only by
-   default).
-5. The extension writes diagnostics to `~/.cache/drag-effects.log` (cleared on
-   every enable; read it with `cat ~/.cache/drag-effects.log`).
-
-Options: `--no-prefs` (do not open Preferences), `--no-install`, `-v` (print
-the full nested log).
-
-Close the nested window to exit. After editing code, run the script again; no
-logout is needed. GNOME 49+ requires the `mutter-devkit` package; the script
-explains how to install it if it is missing.
-
-> X11 has no nested shell: use `./install.sh`, then `Alt+F2` → `r` → Enter.
-> Inside a Flatpak sandbox, run the script from a terminal on the desktop.
-
-> Do not run this extension together with `drag-fx@example.com` (the older
-> version) or **Compiz windows effect**: all of them write window transforms.
-
-### Checks and packaging
 
 ```bash
 make check          # schema, metadata, scripts, registry, control keys
 make check-release  # fails while URL/UUID placeholders remain
 make pack           # portable zip in dist/
-make pack-gnome     # official gnome-extensions pack, if installed
 ```
 
-`make check` runs `glib-compile-schemas --strict`, validates `metadata.json`,
-checks every effect key against the schema, and verifies that `prefs.js` cannot
-accidentally import Clutter, Meta, Shell, Cogl, or GObject at the top level.
+On Wayland, test changes with a local nested-shell helper
+(`nested-shell.sh`, kept out of the repo):
+`./nested-shell.sh` or `DRAG_EFFECTS_DEBUG=1 ./nested-shell.sh`
+(`--no-prefs`, `--no-install`, `-v` are available options). On X11, use
+`./install.sh` then `Alt+F2` → `r` → Enter.
 
-`make pack` produces `dist/drag-effects@centerstorms.shell-extension.zip` with
-`metadata.json` at the ZIP root. `make pack-gnome` uses the official helper and
-produces the same layout.
+### Adding an effect
 
-## Adding an effect
+1. Copy `effects/_template.js` to `effects/<id>.js`; give the class a unique
+   `static id`, `title`, `description`, and `static controls`.
+2. Declare `effect-<id>-enabled` and every control key in the
+   [GSettings schema](schemas/org.gnome.shell.extensions.drag-effects.gschema.xml).
+3. Import the class and add it to the `EFFECTS` registry in
+   [effects/index.js](effects/index.js).
+4. Reinstall: `./install.sh` and restart the shell.
 
-### 1. Create the module
+Preferences picks up the new switch and controls automatically. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-Copy `effects/_template.js` to `effects/spin.js`:
+### Debugging
 
-```js
-import {DragEffect, alphaFor, timeScale} from '../lib/effect.js';
-import {readDouble} from '../lib/settings.js';
-
-export class SpinEffect extends DragEffect {
-    static id = 'spin';                         // -> effect-spin-enabled
-    static title = 'Spin';
-    static description = 'Example description shown in Preferences.';
-
-    static controls = [
-        {
-            key: 'spin-strength',
-            type: 'double',
-            title: 'Strength',
-            min: 0, max: 3, step: 0.05,
-        },
-    ];
-
-    start(_ctx) {
-        this._angle = 0;
-    }
-
-    update(ctx, frame) {
-        const strength = readDouble(this.settings, 'spin-strength', 0.5);
-        const target = ctx.dx * strength;
-
-        this._angle += (target - this._angle) *
-            alphaFor(0.2, timeScale(ctx.dt));
-
-        frame.rotationZ += this._angle;
-    }
-}
-```
-
-`update()` only writes to `frame`:
-`rotationX`/`rotationY`/`rotationZ` (additive), `scaleX`/`scaleY`
-(multiplicative), and `opacity` (0–255).
-
-### 2. Declare the keys in the schema
-
-`schemas/org.gnome.shell.extensions.drag-effects.gschema.xml`:
-
-```xml
-<key name="effect-spin-enabled" type="b">
-  <default>false</default>
-</key>
-
-<key name="spin-strength" type="d">
-  <default>0.5</default>
-  <range min="0" max="3"/>
-</key>
-```
-
-### 3. Register it in `effects/index.js`
-
-```js
-import {SpinEffect} from './spin.js';
-
-export const EFFECTS = [
-    TiltEffect,
-    // ...
-    TrailEffect,
-    SpinEffect,          // add this line
-];
-```
-
-### 4. Reinstall and restart
+Diagnostics are disabled by default. To enable them:
 
 ```bash
-./install.sh
-# Wayland: log out and back in. X11: Alt+F2 -> r
+mkdir -p ~/.config/environment.d
+echo 'DRAG_EFFECTS_DEBUG=1' > ~/.config/environment.d/100-drag-effects-debug.conf
+systemctl --user import-environment DRAG_EFFECTS_DEBUG
 ```
 
-Preferences automatically gets a new group with a switch and the controls you
-declared.
-
-### Supported control types
-
-```js
-{key, type: 'switch', title, subtitle?}
-{key, type: 'int',    title, subtitle?, min, max, step}
-{key, type: 'double', title, subtitle?, min, max, step, digits?}
-{key, type: 'enum',   title, subtitle?, options: [{value, label}]}
-```
-
-If a key is missing from the schema, `lib/settings.js` uses the fallback value
-and Preferences skips that control with a warning. This is convenient during
-development, but `make check` treats it as an error for release.
-
-### Adding a new transform property
-
-`Frame` currently has `rotationX`, `rotationY`, `rotationZ`, `scaleX`,
-`scaleY`, and `opacity`. To add, for example, translation:
-
-1. Add the field to `lib/frame.js` and reset it to its neutral value.
-2. Apply it to the actor in `_applyFrame()` in `extension.js` (for example
-   `actor.translation_x`, or a `Clutter.Transform`).
-3. Have the new effect write that field in `update()`.
-
-For offscreen effects, shaders, or clones, attach the Clutter object in
-`start(ctx)` and remove it in `stop(ctx)`, as `tint`, `ghost`, `trail`, and
-`desaturate` do. Always wrap the calls in `try/catch`: the actor may be
-destroyed if the window closes mid-drag.
-
-> **Important:** `prefs.js` imports every file in `effects/` to read metadata,
-> but the Preferences process **does not have** the Clutter, Meta, or Shell
-> typelibs. Never use top-level `import Clutter from 'gi://Clutter'` (or Meta /
-> Shell) in an effect module. Use the lazy loader in `lib/clutter.js` from
-> `enable()` and call `getClutter()` from `start()`/`update()`/`stop()`.
-
-## Effect lifecycle
-
-| Hook | When | Use it for |
-| --- | --- | --- |
-| `enable()` | extension enabled | allocate resources, start lazy loading |
-| `start(ctx)` | drag begins | reset state, read actor values |
-| `update(ctx, frame)` | every frame | compute values and write to the frame |
-| `stop(ctx)` | mouse released | clean up before the release animation |
-| `disable()` | extension disabled | release resources |
-
-`ctx` contains: `actor`, `win`, `x`, `y`, `dx`, `dy`, `dt`, `elapsed`,
-`width`, `height`, `pivot`, and `settings`.
-
-The set of active effects is fixed when a drag begins; toggling effects during
-a drag applies to the next drag. If `update()` throws, that effect is removed
-from the current drag and the error is logged. `stop()` is always called, even
-if `start()` failed halfway or the actor was destroyed, so effects can clean
-up.
-
-## Debugging
+Then log out and back in and filter the journal:
 
 ```bash
-journalctl -f -o cat /usr/bin/gnome-shell
-gnome-extensions info drag-effects@centerstorms
-cat ~/.cache/drag-effects.log
+journalctl --user -f | grep drag-effects
 ```
 
 Looking Glass (`Alt+F2` → `lg`) → **Extensions** tab also shows errors.
 
-Quick schema/key check:
-
-```bash
-GSETTINGS_SCHEMA_DIR=~/.local/share/gnome-shell/extensions/drag-effects@centerstorms/schemas \
-  gsettings list-keys org.gnome.shell.extensions.drag-effects
-```
-
 ## Publishing
 
-The repository is ready for GitHub and extensions.gnome.org:
-
-1. Set the repository URL and production UUID:
-   `./tools/configure.sh centerstorms [repo]`.
-2. Run `make check-release` and `make pack`.
-3. Push the repository and tag a release; the `Release` workflow attaches the
+1. Run `make check-release` and `make pack` — both must pass.
+2. Push the repository and tag `v3.0.0`; the release workflow attaches the
    ZIP to the GitHub release.
-4. Upload the ZIP at <https://extensions.gnome.org/upload/>.
+3. Upload the ZIP at <https://extensions.gnome.org/upload/>.
 
 See [docs/PUBLISHING.md](docs/PUBLISHING.md) for the full checklist.
-
-## Contributing
-
-Bug reports, effect ideas, and pull requests are welcome. Read
-[CONTRIBUTING.md](CONTRIBUTING.md) before adding an effect or changing the
-engine.
-
-## Support
-
-If Drag Effects is useful to you, you can [buy me a coffee](https://ko-fi.com/centerstorms).
-The link is also available in the Preferences window.
 
 ## License
 

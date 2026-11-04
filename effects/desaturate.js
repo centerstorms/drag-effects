@@ -1,13 +1,16 @@
-// Hiệu ứng: giảm bão hoà.
-// Không ghi vào Frame: gắn Clutter.DesaturateEffect trực tiếp lên actor.
+// Effect: desaturate.
+// Does not write to Frame: attaches a Clutter.DesaturateEffect directly to
+// the actor.
 //
-// API của Clutter.DesaturateEffect ổn định từ GNOME 45 đến 51 (chỉ dùng
-// thuộc tính factor kiểu double), khác với ColorizeEffect đã đổi kiểu màu
-// từ ClutterColor sang CoglColor nên tạm chưa dùng.
+// The Clutter.DesaturateEffect API is stable from GNOME 45 through 51 (only
+// the double-typed factor property is used), unlike ColorizeEffect which
+// changed its color type from ClutterColor to CoglColor and is therefore
+// not used for now.
 //
-// LƯU Ý: prefs.js cũng import file này để đọc metadata, mà tiến trình
-// Preferences không có typelib Clutter. Vì vậy KHÔNG được import Clutter ở
-// top-level; chỉ tải động khi extension thực sự được bật.
+// NOTE: prefs.js also imports this file to read the metadata, and the
+// Preferences process has no Clutter typelib. For that reason Clutter MUST
+// NOT be imported at the top level; load it dynamically only when the
+// extension is actually enabled.
 
 import {DragEffect, alphaFor, timeScale} from '../lib/effect.js';
 import {readDouble, readInt} from '../lib/settings.js';
@@ -27,7 +30,7 @@ function loadClutter() {
             Clutter = module.default;
         })
         .catch(e => {
-            logError(e, 'Drag Effects: không tải được Clutter');
+            logError(e, 'Drag Effects: failed to load Clutter');
         })
         .then(() => {
             clutterLoading = false;
@@ -63,15 +66,16 @@ export class DesaturateEffect extends DragEffect {
     }
 
     start(ctx) {
-        // Dọn effect còn sót từ lần kéo trước (nếu có), trước khi đổi actor.
+        // Clean up any effect left over from the previous drag (if any)
+        // before switching to a new actor.
         this._removeEffect();
 
         this._actor = ctx.actor;
         this._factor = 0;
 
         if (!Clutter) {
-            // Lần kéo đầu tiên trước khi module Clutter tải xong: bỏ qua,
-            // lần kéo sau sẽ có hiệu ứng.
+            // The first drag may happen before the Clutter module finishes
+            // loading: skip; the next drag will have the effect.
             loadClutter();
             return;
         }
@@ -80,7 +84,8 @@ export class DesaturateEffect extends DragEffect {
         try {
             effect = new Clutter.DesaturateEffect({factor: 0});
         } catch (e) {
-            // Bản Clutter không hỗ trợ effect này: bỏ qua, không kéo sập engine.
+            // This Clutter build does not support the effect: skip it
+            // without crashing the engine.
             logError(e);
             return;
         }
@@ -88,10 +93,11 @@ export class DesaturateEffect extends DragEffect {
         effect.factor = 0;
 
         try {
-            // Tránh trùng tên nếu effect cũ chưa được gỡ vì lý do nào đó.
+            // Avoid duplicate names if a stale effect was not removed for
+            // some reason.
             this._actor.remove_effect_by_name(EFFECT_NAME);
         } catch (e) {
-            // actor/effect đã bị huỷ
+            // The actor/effect was already destroyed.
         }
 
         try {
@@ -116,7 +122,7 @@ export class DesaturateEffect extends DragEffect {
         try {
             effect.factor = this._factor;
         } catch (e) {
-            // Effect đã bị huỷ cùng actor.
+            // The effect was destroyed along with the actor.
             this._effect = null;
         }
     }
@@ -148,7 +154,8 @@ export class DesaturateEffect extends DragEffect {
             else
                 effect.actor?.remove_effect(effect);
         } catch (e) {
-            // Actor/effect đã bị huỷ (ví dụ cửa sổ đóng giữa lúc kéo).
+            // The actor/effect was destroyed (e.g. the window closed
+            // mid-drag).
         }
     }
 }
